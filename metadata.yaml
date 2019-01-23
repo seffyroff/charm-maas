@@ -1,0 +1,22 @@
+name: maas-region
+display-name: MAAS Region Controller
+summary: MAAS Region Controller
+maintainer: Phil Merricks <seffyrpff@gmail.com>
+description: |
+  Metal As A Service
+tags:
+  - maas
+  - metal
+  - network
+subordinate: false
+requires:
+  postgresql:
+    interface: "pgsql"
+  rack:
+    interface: "maas"
+provides:
+  region:
+    interface: "maas"
+  http:
+    interface: "http"
+series: [bionic]

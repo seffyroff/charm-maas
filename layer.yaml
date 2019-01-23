@@ -1,0 +1,12 @@
+includes:
+  - layer:basic  # if you use any interfaces, add them here
+  - layer:apt
+  - interface:pgsql
+  - interface:http
+  - interface:maas
+
+options:
+  apt:
+    packages:
+      - maas-region-api
+repo: https://www.github.com/seffyroff/layer-maas/
