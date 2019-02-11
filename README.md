@@ -3,29 +3,26 @@
 This is a fork of James Beedy's MAAS charm and Blake Rouse's MAAS charm.  It uses James Beedy's interface-maas.  Links below.
 
 It performs an apt install of MAAS 2.5. from the ppa:maas/next repo. This is necessary as Snaps are broken.
-As of this vesrion the charm only supports installing Rack or Region, and is 
-yet to have any scale-out support added.
+As of this version the charm only supports installing Rack or Region, and scale-out support is largely untested (but implemented via leadership layer).
 
 # Usage
 
-juju deploy maas-region
+juju deploy maas region --config maas-mode=region
+juju deploy maas rack --config maas-mode=rack
 juju deploy postgresql
-juju relate maas-region:postgresql postgresql:db
-
-Will get your region running.  Configure prior to deployment for best results.
-
-Then add one or more Rack Controllers.
+juju relate region:postgresql postgresql:db
+juju relate region:region rack:rack
+Will get your MAAS running.  Configure prior to deployment for best results.
 
 You can then browse to http://ip-address:5240/MAAS to configure the service.
 
 ## Scale out Usage
 
-Not supported yet, multiple region deployments will currently probably re-init the database, or something else bad.
-I do plan to add this in.
+Untested but there's support for adding units for all 3 services in theory.  Give it a try!
 
 ## Known Limitations and Issues
 
-No scale-out usage yet.  No post-install config updates.  Status Version is not set.  Probably some other issues.
+Post-install config updating is untested.  Probably some other issues.
 
 # Configuration
 
