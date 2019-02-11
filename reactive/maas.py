@@ -16,7 +16,7 @@ MAAS_WEB_PORT = 5240
 
 
 set_flag('maas.mode.{}'.format(config('maas-mode')))
-status_set('maintenance', 'MAAS {} Configuration'.format(config('maas-mode')))
+# status_set('maintenance', 'MAAS {} Configuration'.format(config('maas-mode')))
 
 kv = unitdata.kv()
 
@@ -27,27 +27,27 @@ def maas_url():
         return 'http://{}:5240/MAAS'.format(PRIVATE_IP)
 
 @when('maas.mode.region')
-@when_not('apt.maas-region-api.installed.')
+@when_not('apt.installed.maas-region-api')
 def install_maas_region_api():
     charms.apt.queue_install(['maas-region-api'])
 
-@when('maas.mode.region')
-@when('apt.installed.maas-region-api')
+@when('maas.mode.region',
+      'apt.installed.maas-region-api')
 @when_not('maas.version.set')
 def set_message_version():
     application_version_set(get_upstream_version('maas-region-api'))
 
     # message = sp.check_output('maas', '--version', stderr=sp.STDOUT)
     
-    status_set('maintenance', 'MAAS Region API Installed' )
+    status_set('maintenance', 'Region installed, waiting for DB rel' )
 
     set_flag('maas.version.set')
 # @when_not('postgresql.connected')
 # def set_waiting_for_db_relation():
 #     status_set('waiting', 'Waiting for PGSQL Relation')
 
-@when('maas.mode.region')
-@when('postgresql.connected')
+@when('maas.mode.region',
+      'postgresql.connected')
 @when_not('maas.database.requested')
 def request_postgresql_database_for_maas_region(pgsql):
     """Request PGSql DB
@@ -64,8 +64,8 @@ def request_postgresql_database_for_maas_region(pgsql):
     status_set('active', 'MAASDB requested')
     set_flag('maas.database.requested')
 
-@when('maas.mode.region')
-@when('postgresql.master.available',
+@when('maas.mode.region',
+      'postgresql.master.available',
       'maas.database.requested')
 @when_not('maas.juju.database.available')
 def get_set_postgresql_data_for_maas_db(pgsql):
@@ -82,9 +82,10 @@ def get_set_postgresql_data_for_maas_db(pgsql):
     clear_flag('maas.manual.database.available')
     set_flag('maas.juju.database.available')
 
-@when('maas.mode.region')
-@when('apt.maas-region-api.installed', 'leadership.is_leader')
-@when('maas.juju.database.available')
+@when('maas.mode.region',
+      'apt.installed.maas-region-api',
+      'leadership.is_leader',
+      'maas.juju.database.available')
 @when_not('maas.init.complete')
 def maas_leader_init():
     """Init MAAS (region, region+rack) - only leader should run this code
@@ -121,8 +122,9 @@ def maas_leader_init():
     status_set('active', 'MAAS-{} configured'.format(config('maas-mode')))
     set_flag('maas.init.complete')
 
-@when('maas.mode.region')
-@when('maas.init.complete', 'leadership.is_leader')
+@when('maas.mode.region',
+      'maas.init.complete',
+      'leadership.is_leader')
 @when_not('maas.secret.published')
 def get_set_secret():
     status_set('maintenance', 'Retrieving Rack Secret')
@@ -161,23 +163,30 @@ def send_relation_data_to_rack():
 ### RACK CONTROLLER LOGIC
 
 @when('maas.mode.rack')
-@when_not('apt.maas-rack-controller.installed')
+@when_not('apt.installed.maas-rack-controller')
 def install_maas_rack_controller():
     charms.apt.queue_install(['maas-rack-controller'])
 
-@when('maas.mode.rack')
-@when('apt.installed.maas-rack-controller')
+@when('maas.mode.rack',
+      'apt.installed.maas-rack-controller')
 @when_not('maas.version.set')
 def set_message_version():
     application_version_set(get_upstream_version('maas-rack-controller'))
     
-    status_set('maintenance', 'MAAS Rack Controller Installed' )
+    status_set('maintenance', 'Rack Installed, waiting for Region rel' )
 
     set_flag('maas.version.set')
 
-@when('maas.mode.rack')
-@when('endpoint.rack.available')
-@when('apt.installed.maas-rack-controller')
+# @when('maas.mode.rack')
+# @when('apt.installed.maas-rack-controller')
+# @when_not('endpoint.rack.available')
+# def set_rack_waiting_relation():
+#     status_set('waiting', 'Waiting for Region Relation' )
+
+
+@when('maas.mode.rack',
+      'endpoint.rack.available',
+      'apt.installed.maas-rack-controller')
 @when_not('rack.relation.data.available')
 def acquire_config_from_region_controller():
     """Acquire maas_url and secret from region
@@ -191,8 +200,8 @@ def acquire_config_from_region_controller():
     status_set('active', 'Region configuration acquired')
     set_flag('rack.relation.data.available')
 
-@when('maas.mode.rack')
-@when('rack.relation.data.available')
+@when('maas.mode.rack',
+      'rack.relation.data.available')
 @when_not('maas.rack.init.complete')
 def configure_maas_rack():
     """Configure rack controller now that we have what we need

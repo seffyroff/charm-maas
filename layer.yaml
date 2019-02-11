@@ -4,9 +4,11 @@ includes:
   - interface:pgsql
   - interface:http
   - interface:maas
+  - layer:leadership
 
-options:
-  apt:
-    packages:
-      - maas-region-api
-repo: https://www.github.com/seffyroff/layer-maas/
+
+# options:
+#   apt:
+#     packages:
+#       - maas-region-api
+repo: https://www.github.com/seffyroff/maas/

@@ -1,7 +1,7 @@
-name: maas-region
-display-name: MAAS Region Controller
-summary: MAAS Region Controller
-maintainer: Phil Merricks <seffyrpff@gmail.com>
+name: maas
+display-name: MAAS Region and Rack Controller
+summary: MAAS Region/Rack Controller
+maintainer: Phil Merricks <seffyroff@gmail.com>
 description: |
   Metal As A Service
 tags:

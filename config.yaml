@@ -2,7 +2,7 @@ options:
     maas-mode:
         type: string
         default: region
-        description: Type of maas node. Valid options are, (region, rack, region+rack, all)
+        description: Type of maas node. Valid options are, (region, rack)
     install_sources:
         type: string
         default: ppa:maas/next
